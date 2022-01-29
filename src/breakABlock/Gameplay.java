@@ -13,6 +13,9 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private boolean isPlaying;
 	private int score;
 	
+	private int appWidth; 
+	private int appHeight;
+	
 	private int totalBricks;
 	
 	private Timer timer; 
@@ -24,7 +27,9 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private int ballXDir;
 	private int ballYDir;
 	
-	Gameplay(){
+	Gameplay(int width, int height){
+		appWidth = width;
+		appHeight = height;
 		initGame();
 		addKeyListener(this);
 		setFocusable(true);
@@ -41,7 +46,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		delay = 10;
 		
 		//ball and paddle positions and directions
-		playerX = 310;
+		playerX = appWidth / 2;
 		ballPosX = 120;
 		ballPosY = 350;
 		ballXDir = -1;
@@ -52,17 +57,18 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	public void paint(Graphics g) {
 		//background 
 		g.setColor(Color.black);
-		g.fillRect(1, 1, 692, 592); // magic numbers
+		g.fillRect(0, 0, appWidth, appHeight); // magic numbers
 		
 		drawBorders(g);
 		drawBallAndPaddle(g);
 	}
 	
 	public void drawBorders(Graphics g) {
+		int borderWidth = 3; 
 		g.setColor(Color.yellow);
-		g.fillRect(0, 0, 3, 592);
-		g.fillRect(0, 0, 692, 3);
-		g.fillRect(684, 0, 3, 592);
+		g.fillRect(0, 0, borderWidth, appHeight); 				  //left
+		g.fillRect(0, 0, appWidth, borderWidth);  				  //top
+		g.fillRect(appWidth - 16, 0, borderWidth, appHeight);	  //right
 	}
 	
 	public void drawBallAndPaddle(Graphics g) {

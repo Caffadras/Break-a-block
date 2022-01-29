@@ -8,7 +8,7 @@ public class Main {
 	public static void main(String[] args) {
 		JFrame obj = new JFrame();	
 		
-		Gameplay gamePlay = new Gameplay();
+		Gameplay gamePlay = new Gameplay(700, 600);
 		obj.setBounds(10, 10, 700, 600);
 		obj.setTitle("Break a Block");
 		obj.setResizable(false);
