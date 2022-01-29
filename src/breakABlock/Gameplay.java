@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.util.Random;
 
 public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private boolean isPlaying;
@@ -20,7 +21,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private int totalBricks;
 	
 	private Timer timer; 
-	private int delay; 
+	private int timerDelay; 
 	
 	private int paddleLength;
 	private int playerX;
@@ -37,22 +38,24 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		setFocusable(true);
 		//setFocusTraversalKeysEnabled(false);
 		
-		timer = new Timer(delay, this);
+		timer = new Timer(timerDelay, this);
 		timer.start();
 	}
 	
 	public void initGame() {
+		Random rand = new Random();
+		
 		isPlaying = false;
 		score = 0;
 		totalBricks = 0;
-		delay = 10;
+		timerDelay= 10;
 		
 		//ball and paddle positions and directions
 		paddleLength = 100;
 		playerX = appWidth / 2 - paddleLength;
-		ballPosX = 120;
-		ballPosY = 350;
-		ballDirX = -2;
+		ballPosX = appWidth / 2 - 20;
+		ballPosY = appHeight / 2;
+		ballDirX = -2 * (rand.nextBoolean()? 1 : -1); //random direction on x-axis
 		ballDirY = -3;
 	}
 	
@@ -66,7 +69,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		drawBallAndPaddle(g);
 	}
 	
-	public void drawBorders(Graphics g) {
+	private void drawBorders(Graphics g) {
 		int borderWidth = 3; 
 		g.setColor(Color.yellow);
 		g.fillRect(0, 0, borderWidth, appHeight);	//left
@@ -74,7 +77,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		g.fillRect(appWidth - 16, 0, borderWidth, appHeight);	//right
 	}
 	
-	public void drawBallAndPaddle(Graphics g) {
+	private void drawBallAndPaddle(Graphics g) {
 		//paddle
 		g.setColor(Color.green);
 		g.fillRect(playerX, appHeight - 50, paddleLength, 8);
@@ -94,6 +97,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private void ballTick() {
 		if (!isPlaying) return;
 		
+		//Move the ball
 		ballPosX += ballDirX; 
 		ballPosY += ballDirY;
 		
@@ -127,13 +131,13 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		isPlaying = true;
+		isPlaying = true;       //any button press starts the game
 		if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			if (playerX + paddleLength < appWidth-20) {
+			if (playerX + paddleLength < appWidth-20) { //check if paddle exceeds right border
 				playerX += 20; 
 			}
 		}
-		else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+		else if (e.getKeyCode() == KeyEvent.VK_LEFT) { //check if paddle exceeds left border
 			if (playerX > 20) {
 				playerX -= 20;
 			}
