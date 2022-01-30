@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.Random;
@@ -18,7 +19,8 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private int appWidth; 
 	private int appHeight;
 	
-	private int totalBricks;
+	MapGenerator map;
+	private int totalBlocks;
 	
 	private Timer timer; 
 	private int timerDelay; 
@@ -34,6 +36,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		appWidth = width;
 		appHeight = height;
 		initGame();
+		map = new MapGenerator(7, 2, 75, 75);
 		addKeyListener(this);
 		setFocusable(true);
 		//setFocusTraversalKeysEnabled(false);
@@ -47,7 +50,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		
 		isPlaying = false;
 		score = 0;
-		totalBricks = 0;
+		totalBlocks = 14;
 		timerDelay= 10;
 		
 		//ball and paddle positions and directions
@@ -67,6 +70,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		
 		drawBorders(g);
 		drawBallAndPaddle(g);
+		map.drawMap((Graphics2D)g);
 	}
 	
 	private void drawBorders(Graphics g) {
@@ -113,20 +117,28 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		}
 	
 		//Check paddle collision	
-		Rectangle ballHitBox = new Rectangle(ballPosX, ballPosY, 20, 20);
-		if (ballHitBox.intersects(
+		Rectangle ballHitbox = new Rectangle(ballPosX, ballPosY, 20, 20);
+		if (ballHitbox.intersects(
 				new Rectangle(playerX, appHeight - 50, paddleLength, 8))) {
 			ballDirY = -ballDirY;
 			ballPosY = appHeight - 50-20;
-			if (ballHitBox.intersects(new Rectangle(playerX-20, appHeight - 50, 8, 8))) {
+			if (ballHitbox.intersects(new Rectangle(playerX-20, appHeight - 50, 8, 8))) {
 				ballDirX = -ballDirX;
 			}
-			if (ballHitBox.intersects(new Rectangle(playerX+paddleLength, appHeight - 50, 8, 8))) {
+			if (ballHitbox.intersects(new Rectangle(playerX+paddleLength, appHeight - 50, 8, 8))) {
 				ballDirX = -ballDirX;
 			}
 			
 		}
 		
+		//check collision with blocks
+		Rectangle obstacle  = map.checkCollision(ballHitbox);
+		if (obstacle != null) {
+			if (ballPosX + 19 <= obstacle.x || ballPosX + 1 >=obstacle.x + obstacle.width) {
+				ballDirX = -ballDirX;
+			}
+			else ballDirY = -ballDirY;
+		}
 	}
 	
 	@Override
