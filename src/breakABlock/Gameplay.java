@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private boolean isPlaying;
-	private boolean hasLost;
+	private boolean gameEnded;
 	private int score;
 	
 	private int appWidth; 
@@ -52,7 +52,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		Random rand = new Random();
 		
 		isPlaying = false;
-		hasLost = false;
+		gameEnded = false;
 		score = 0;
 		timerDelay= 10;
 
@@ -83,11 +83,18 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		g.setFont(new Font("serif", Font.BOLD, 25));
 		g.drawString("" + score, appWidth -80, 40);
 		
-		//loss screen
-		if(hasLost) {
-			g.setColor(Color.red);
-			g.drawString("Game over, Score: " + score, appWidth/3, appHeight/2);
-			g.drawString("Press Enter to restart.", appWidth/3, appHeight/2+50);
+		//loss and win screen
+		if(gameEnded) {
+			if (totalBlocks == 0) {
+				g.setColor(Color.green);
+				g.drawString("You Won, Score: " + score, appWidth/3, appHeight/2);
+				g.drawString("Press Enter to restart.", appWidth/3, appHeight/2+50);
+			}
+			else {				
+				g.setColor(Color.red);
+				g.drawString("Game over, Score: " + score, appWidth/3, appHeight/2);
+				g.drawString("Press Enter to restart.", appWidth/3, appHeight/2+50);
+			}
 		}
 	}
 	
@@ -117,7 +124,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	}
 	
 	private void ballTick() {
-		if (!isPlaying) return;
+		if (!isPlaying || gameEnded) return;
 		
 		//Move the ball
 		ballPosX += ballDirX; 
@@ -126,10 +133,11 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		//check loss condition
 		if(ballPosY > appHeight - 20) {
 			isPlaying = false;
-			hasLost = true;
+			gameEnded = true;
 			ballDirX = 0; 
 			ballDirY = 0; 	
 		}
+		
 		
 		//Check border collision
 		if (ballPosX <= 0) {
@@ -168,6 +176,10 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 			else ballDirY = -ballDirY;
 		}
 		
+		//check win condition 
+			if (totalBlocks == 0) {
+				gameEnded= true;
+			}
 	}
 	
 	@Override
@@ -184,7 +196,7 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 			}
 		}
 		else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-			if (hasLost) initGame();
+			if (gameEnded) initGame();
 		}
 	}
 	
