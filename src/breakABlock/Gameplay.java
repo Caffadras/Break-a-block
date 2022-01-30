@@ -10,10 +10,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.Font;
 import java.util.Random;
+
 
 public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	private boolean isPlaying;
+	private boolean hasLost;
 	private int score;
 	
 	private int appWidth; 
@@ -35,8 +38,8 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 	Gameplay(int width, int height){
 		appWidth = width;
 		appHeight = height;
-		initGame();
 		map = new MapGenerator(7, 2, 75, 75);
+		initGame();
 		addKeyListener(this);
 		setFocusable(true);
 		//setFocusTraversalKeysEnabled(false);
@@ -49,9 +52,12 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		Random rand = new Random();
 		
 		isPlaying = false;
+		hasLost = false;
 		score = 0;
-		totalBlocks = 14;
 		timerDelay= 10;
+
+		map.initMap();
+		totalBlocks = 14;
 		
 		//ball and paddle positions and directions
 		paddleLength = 100;
@@ -71,6 +77,18 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		drawBorders(g);
 		drawBallAndPaddle(g);
 		map.drawMap((Graphics2D)g);
+		
+		//score 
+		g.setColor(Color.white);
+		g.setFont(new Font("serif", Font.BOLD, 25));
+		g.drawString("" + score, appWidth -80, 40);
+		
+		//loss screen
+		if(hasLost) {
+			g.setColor(Color.red);
+			g.drawString("Game over, Score: " + score, appWidth/3, appHeight/2);
+			g.drawString("Press Enter to restart.", appWidth/3, appHeight/2+50);
+		}
 	}
 	
 	private void drawBorders(Graphics g) {
@@ -105,6 +123,14 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		ballPosX += ballDirX; 
 		ballPosY += ballDirY;
 		
+		//check loss condition
+		if(ballPosY > appHeight - 20) {
+			isPlaying = false;
+			hasLost = true;
+			ballDirX = 0; 
+			ballDirY = 0; 	
+		}
+		
 		//Check border collision
 		if (ballPosX <= 0) {
 			ballDirX = -ballDirX;
@@ -134,11 +160,14 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 		//check collision with blocks
 		Rectangle obstacle  = map.checkCollision(ballHitbox);
 		if (obstacle != null) {
+			score += 5;
+			--totalBlocks;
 			if (ballPosX + 19 <= obstacle.x || ballPosX + 1 >=obstacle.x + obstacle.width) {
 				ballDirX = -ballDirX;
 			}
 			else ballDirY = -ballDirY;
 		}
+		
 	}
 	
 	@Override
@@ -153,6 +182,9 @@ public class Gameplay extends JPanel implements KeyListener, ActionListener {
 			if (playerX > 20) {
 				playerX -= 20;
 			}
+		}
+		else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if (hasLost) initGame();
 		}
 	}
 	

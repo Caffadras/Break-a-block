@@ -21,14 +21,14 @@ public class MapGenerator {
 		//InitMap(totalBlocks, blockWidth, blockHeight);
 	}
 	
-//	private void InitMap(int totalBlocks, int blockWidth, int blockHeight) {
-//		for(int i=0; i<2; ++i) {
-//			for(int j =0; j<(10); ++j) {
-//				blocks[i][j].active = true;
-//				blocks[i][j].setRectangle(j * blockWidth + 80, i * blockHeight + 50,  blockWidth, blockHeight);
-//			}
-//		}	
-//	}
+	public void initMap() {
+		for(int i=0; i<blocks.length; ++i) {
+			for(int j =0; j<blocks[i].length; ++j) {
+				blocks[i][j].active = true;
+			}
+		}
+	}
+	
 	public void drawMap(Graphics2D g) {
 		for(int i=0; i<blocks.length; ++i) {
 			for(int j =0; j<blocks[i].length; ++j) {
